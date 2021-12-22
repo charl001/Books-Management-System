@@ -112,11 +112,7 @@ const getbooks = async (req, res) => {
 
         const { userId, category, subcategory } = queryParams
 
-        if(!isValidObjectId(userId))
-       {
-           return res.status(400).send({status:false,message:"User Id is not valid. Please enter it correctly"})
-       }
-
+ 
 
         if (isValid(userId) && isValidObjectId(userId)) {
             filterQuery['userId'] = userId
@@ -160,25 +156,12 @@ const getbookbyId = async (req, res) => {
         if (!BookDetail) {
             return res.status(400).send({ status: false, message: "BookId is not correct or available in DB or this book is deleted" })
         }
-        let FetchBook = {
-            _id: BookDetail._id,
-            title: BookDetail.title,
-            excerpt: BookDetail.excerpt,
-            userId: BookDetail.userId,
-            ISBN: BookDetail.ISBN,
-            category: BookDetail.category,
-            subcategory: BookDetail.subcategory,
-            reviews: BookDetail.reviews,
-            deletedAt: BookDetail.deletedAt,
-            releasedAt: BookDetail.releasedAt,
-            createdAt: BookDetail.createdAt,
-            updatedAt: BookDetail.updatedAt
-        }
 
         let reviewsData = await ReviewModel.find({ bookId: bookId, isDeleted: false }).select({ isDeleted: 0, __v: 0 })
-
-        FetchBook.reviewsData = reviewsData;
-        res.status(200).send({ status: true, message: 'Books list', data: FetchBook })
+       let Prab=BookDetail.toObject()
+    
+        Prab["reviews"]=reviewsData
+        res.status(200).send({ status: true, message: 'Books list', data: Prab })
     } catch (err) {
         res.status(500).send({ status: false, msg: err.message })
     }
